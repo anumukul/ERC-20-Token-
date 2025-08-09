@@ -176,7 +176,110 @@ describe("ERCToken", async function(){
 
 
         await expect(ERCToken.approve(ethers.ZeroAddress,1000)).to.be.revertedWith("Not a valid address");
+
+    })
+
+
+
+  })
+
+  describe("transferFrom Function Tests", async function(){
+
+    it("Should transfer tokens on behalf of another account if allowed", async function(){
+
+         await ERCToken.approve(addr1.address,1000);
+         await ERCToken.connect(addr1).transferFrom(owner.address,addr2,1000);
+          expect(await ERCToken.balanceOf(addr2.address)).to.equal(1000);
+          expect(await ERCToken.balanceOf(owner.address)).to.equal(await ERCToken.totalSupply()-1000n);
+
+
+
+
+    })
+
+    it("Should decrease allowance correctly after transfer", async function(){
+
+        await ERCToken.approve(addr1.address,1000);
+
+         expect(await ERCToken.allowance(owner.address,addr1.address)).to.equal(1000);
+
+        await ERCToken.connect(addr1).transferFrom(owner.address,addr2,500);
+
+       
+       expect(await ERCToken.allowance(owner.address,addr1.address)).to.equal(500);
+
+      
+
+
+
+
+
+    })
+
+    it("Should update balances of _from and _to correctly", async function(){
+
+        await ERCToken.approve(addr1.address,1000);
+
         
+        await ERCToken.connect(addr1).transferFrom(owner.address,addr2,500);
+
+        expect(await ERCToken.balanceOf(addr2.address)).to.equal(500);
+      
+
+       expect(await ERCToken.balanceOf(owner.address)).to.equal(await ERCToken.totalSupply()-500n);
+
+
+
+
+    })
+
+    it("Should emit Transfer event on successful transferFrom", async function(){
+
+        await ERCToken.approve(addr1.address,1000);
+
+        
+        await expect(ERCToken.connect(addr1).transferFrom(owner.address,addr2,500)).to.emit(ERCToken,"Transfer").withArgs(owner.address,addr2.address,500);
+
+
+
+
+
+    })
+
+    it("Should fail if _from address is zero", async function(){
+
+
+        
+
+        
+
+        await expect(ERCToken.connect(addr1).transferFrom(ethers.ZeroAddress,addr2.address,500)).to.be.revertedWith("Invalid addresss");
+
+    })
+
+    it("Should fail if _to address is zero", async function(){
+
+        await expect(ERCToken.connect(addr1).transferFrom(owner.address,ethers.ZeroAddress,500)).to.be.revertedWith("Invalid addresss");
+
+
+
+    })
+
+    it("Should fail if balance of _from is insufficient", async function(){
+
+
+        await ERCToken.approve(addr1.address,ethers.parseUnits("4000",18));
+
+        await expect(ERCToken.connect(addr1).transferFrom(owner.address,addr2.address,ethers.parseUnits("3500",18))).to.be.revertedWith("Not enough Tokens");
+
+
+    })
+
+    it("Should fail if allowance is insufficient", async function(){
+
+         await ERCToken.approve(addr1.address,ethers.parseUnits("1000",18));
+
+          await expect(ERCToken.connect(addr1).transferFrom(owner.address,addr2.address,ethers.parseUnits("1500",18))).to.be.revertedWith("Not allowed");
     })
 
 
