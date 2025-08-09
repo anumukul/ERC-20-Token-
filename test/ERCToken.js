@@ -125,4 +125,62 @@ describe("ERCToken", async function(){
   
   })
 
+  describe("Approve function tests",function(){
+
+    it("should allow an account to approve another to spend tokens", async function(){
+
+
+        await ERCToken.approve(addr1.address,1000);
+
+        expect(await ERCToken.allowance(owner.address,addr1.address)).to.equal(1000);
+
+        await ERCToken.connect(addr1).transferFrom(owner.address,addr2,1000);
+
+        expect(await ERCToken.balanceOf(addr2.address)).to.equal(1000);
+       expect(await ERCToken.allowance(owner.address,addr1.address)).to.equal(0);
+
+       expect(await ERCToken.balanceOf(owner.address)).to.equal(await ERCToken.totalSupply()-1000n);
+
+
+
+        
+    })
+
+    it("Should set the correct allowance", async function(){
+
+        await ERCToken.approve(addr1.address,1000);
+
+        expect(await ERCToken.allowance(owner.address,addr1.address)).to.equal(1000);
+
+        await ERCToken.connect(addr1).transferFrom(owner.address,addr2,1000);
+
+        expect(await ERCToken.balanceOf(addr2.address)).to.equal(1000);
+       expect(await ERCToken.allowance(owner.address,addr1.address)).to.equal(0);
+
+       expect(await ERCToken.balanceOf(owner.address)).to.equal(await ERCToken.totalSupply()-1000n);
+
+
+
+
+    })
+
+    it("Should emit Approval event on approval", async function(){
+
+        const tokensToApprove=1000;
+
+
+        await expect(ERCToken.approve(addr1.address,tokensToApprove)).to.emit(ERCToken,"Approval").withArgs(owner.address,addr1.address,tokensToApprove);
+    })
+
+    it("should fail if spenders address is zero", async function(){
+
+
+        await expect(ERCToken.approve(ethers.ZeroAddress,1000)).to.be.revertedWith("Not a valid address");
+        
+    })
+
+
+
+  })
+
 })
