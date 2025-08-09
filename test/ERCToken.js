@@ -1,5 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+
+require("@nomicfoundation/hardhat-chai-matchers");
 describe("ERCToken", async function(){
 
  let owner;
@@ -104,6 +106,20 @@ describe("ERCToken", async function(){
 
          expect(await ERCToken.transfer(addr2,1000)).to.emit(ERCToken,"Transfer").withArgs(addr1.address,addr2.address,1000);
 
+    })
+
+    it("Should fail if sender does't have enough balance",async function(){
+
+
+
+        await expect(ERCToken.connect(addr1).transfer(addr2,100)).to.be.revertedWith("Not enough tokens");
+
+    })
+
+    it("Should fail if the recipient address is zero", async function(){
+
+
+        await expect(ERCToken.transfer(ethers.ZeroAddress,1000)).to.be.rejectedWith("Not a valid recipient address");
     })
 
   
