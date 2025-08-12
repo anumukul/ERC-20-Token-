@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS, ERC20_ABI, type Address } from '../contracts/contractConfig'
 import { parseUnits, formatUnits } from 'viem'
 import { useTokenBalance } from '../hooks/useTokenBalance'
+import { TransactionContext } from './TransactionHistory'
 
 export const TransferForm = () => {
   const { address, isConnected } = useAccount()
@@ -11,6 +12,7 @@ export const TransferForm = () => {
   const [error, setError] = useState('')
   
   const { balance, refetch: refetchBalance } = useTokenBalance(address)
+  const transactionContext = useContext(TransactionContext)
   
   const { data: hash, isPending, writeContract, error: writeError } = useWriteContract()
   
@@ -18,13 +20,40 @@ export const TransferForm = () => {
     hash,
   })
 
+ 
+  useEffect(() => {
+    if (hash && transactionContext && to && amount) {
+      transactionContext.addTransaction({
+        hash: hash,
+        type: 'Transfer',
+        status: 'pending',
+        timestamp: new Date().toISOString(),
+        amount: amount,
+        to: to,
+        from: address || undefined,
+      })
+    }
+  }, [hash, transactionContext, to, amount, address])
+
+ 
+  useEffect(() => {
+    if (isSuccess && hash && transactionContext) {
+      transactionContext.updateTransactionStatus(hash, 'success')
+    }
+  }, [isSuccess, hash, transactionContext])
+
+
+  useEffect(() => {
+    if (writeError && hash && transactionContext) {
+      transactionContext.updateTransactionStatus(hash, 'failed')
+    }
+  }, [writeError, hash, transactionContext])
+
   const handleTransfer = () => {
     console.log('Transfer button clicked!')
-    alert('Transfer button clicked!') 
     
     setError('')
     
-   
     if (!to || !amount) {
       setError('Please fill in all fields')
       return
@@ -41,7 +70,6 @@ export const TransferForm = () => {
       return
     }
 
-    
     if (balance) {
       const balanceFormatted = parseFloat(formatUnits(balance, 18))
       if (amountNumber > balanceFormatted) {
@@ -71,7 +99,7 @@ export const TransferForm = () => {
     }
   }
 
-
+  
   if (isSuccess && hash) {
     setTimeout(() => {
       setTo('')
@@ -91,10 +119,15 @@ export const TransferForm = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Transfer Tokens</h2>
+      <div className="flex items-center gap-2 mb-6">
+        <h2 className="text-xl font-semibold text-gray-800">Transfer Tokens</h2>
+        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+          📤 Direct Transfer
+        </span>
+      </div>
       
       <div className="space-y-4">
-        {}
+       
         <div className="bg-blue-50 p-3 rounded-md">
           <p className="text-sm text-blue-700">
             Your Balance: {balance ? formatUnits(balance, 18) : '0'} INR
@@ -132,7 +165,7 @@ export const TransferForm = () => {
           </p>
         </div>
 
-   
+       
         <div className="flex gap-2">
           <button
             onClick={() => setAmount('1')}
@@ -154,14 +187,26 @@ export const TransferForm = () => {
           </button>
         </div>
 
-        
+      
+        {hash && (
+          <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
+            <p className="text-purple-700 text-sm font-medium mb-1">
+              📝 Transaction Status Tracking
+            </p>
+            <p className="text-purple-600 text-xs">
+              This transaction will appear in your Transaction History below with real-time status updates!
+            </p>
+          </div>
+        )}
+
+       
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-md p-3">
             <p className="text-red-600 text-sm">{error}</p>
           </div>
         )}
 
-       
+        
         {writeError && (
           <div className="bg-red-50 border border-red-200 rounded-md p-3">
             <p className="text-red-600 text-sm">
@@ -170,7 +215,7 @@ export const TransferForm = () => {
           </div>
         )}
 
-       
+        
         {hash && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
             <p className="text-blue-600 text-sm">
@@ -188,14 +233,17 @@ export const TransferForm = () => {
           </div>
         )}
 
-       
+        
         {isSuccess && (
           <div className="bg-green-50 border border-green-200 rounded-md p-3">
             <p className="text-green-600 text-sm">✅ Transfer successful!</p>
+            <p className="text-green-500 text-xs mt-1">
+              Check Transaction History below for details!
+            </p>
           </div>
         )}
 
-        
+       
         <div className="text-xs text-gray-500">
           Status: {isPending ? 'Waiting for confirmation...' : isConfirming ? 'Processing transaction...' : 'Ready'}
         </div>
@@ -211,10 +259,13 @@ export const TransferForm = () => {
 
        
         <button
-          onClick={() => alert('Test button works!')}
+          onClick={() => {
+            console.log('Test button clicked - TransferForm is working!')
+            alert('✅ TransferForm test successful!')
+          }}
           className="w-full bg-gray-500 text-white py-2 px-4 rounded-md text-sm"
         >
-          🧪 Test Button (Click to verify buttons work)
+          🧪 Test Transfer Form
         </button>
       </div>
     </div>

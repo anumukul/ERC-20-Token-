@@ -1,14 +1,17 @@
-import { useState } from 'react'
+
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
 import { CONTRACT_ADDRESS, ERC20_ABI, type Address } from '../contracts/contractConfig'
 import { parseUnits, formatUnits } from 'viem'
+import { useState, useContext, useEffect } from 'react'
+import { TransactionContext } from './TransactionHistory'
+
 
 export const ApprovalManager = () => {
   const { address, isConnected } = useAccount()
   const [spender, setSpender] = useState('')
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
-  
+  const transactionContext = useContext(TransactionContext)
   const { data: hash, isPending, writeContract, error: writeError } = useWriteContract()
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
 
@@ -107,6 +110,33 @@ export const ApprovalManager = () => {
       refetchAllowance()
     }, 3000)
   }
+
+
+  useEffect(() => {
+  if (hash && transactionContext && spender && amount) {
+    transactionContext.addTransaction({
+      hash: hash,
+      type: 'Approval',
+      status: 'pending',
+      timestamp: new Date().toISOString(),
+      amount: amount,
+      to: spender,
+      from: address || undefined,
+    })
+  }
+}, [hash, transactionContext, spender, amount, address])
+
+useEffect(() => {
+  if (isSuccess && hash && transactionContext) {
+    transactionContext.updateTransactionStatus(hash, 'success')
+  }
+}, [isSuccess, hash, transactionContext])
+
+useEffect(() => {
+  if (writeError && hash && transactionContext) {
+    transactionContext.updateTransactionStatus(hash, 'failed')
+  }
+}, [writeError, hash, transactionContext])
 
   if (!isConnected) {
     return (
