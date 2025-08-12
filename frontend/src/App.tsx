@@ -8,6 +8,7 @@ import { TokenDashboard } from './components/TokenDashboard'
 import { TransferForm } from './components/TransferForm'
 import { ApprovalManager } from './components/ApprovalManager'
 import { TransferFromForm } from './components/TransferFromForm'
+import { BalanceChecker } from './components/BalanceChecker'
 import { TransactionHistory, TransactionProvider } from './components/TransactionHistory'
 import { EventListener } from './components/EventListener'
 
@@ -56,17 +57,18 @@ function App() {
 
               <main className="max-w-7xl mx-auto py-8 px-6">
                 <div className="space-y-8">
-                 
+                
                   <TokenDashboard />
                   
                  
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
                     <TransferForm />
                     <ApprovalManager />
                     <TransferFromForm />
+                    <BalanceChecker />
                   </div>
 
-                 
+                
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <EventListener />
                     <TransactionHistory />
@@ -87,6 +89,7 @@ function App() {
                       <span>✅ Transfer</span>
                       <span>✅ Approve</span>
                       <span>✅ TransferFrom</span>
+                      <span>✅ BalanceOf</span>
                       <span>✅ Live Events</span>
                       <span>✅ Transaction History</span>
                     </div>
