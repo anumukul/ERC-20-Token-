@@ -282,7 +282,7 @@ export const EventListener = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slideInFromTop {
           from {
             opacity: 0;

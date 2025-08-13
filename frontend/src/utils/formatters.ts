@@ -15,3 +15,8 @@ export const parseTokenAmount = (amount: string, decimals: number = 18): bigint 
   if (!amount || amount === '') return 0n
   return parseUnits(amount, decimals)
 }
+
+export const formatTxHash = (hash: string): string => {
+  if (!hash) return '';
+  return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
+};
