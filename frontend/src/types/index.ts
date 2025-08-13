@@ -1,5 +1,3 @@
-import type { Address } from '../contracts/contractConfig'
-
 export interface TokenInfo {
   name: string
   symbol: string

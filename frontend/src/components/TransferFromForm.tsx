@@ -331,26 +331,30 @@ export const TransferFromForm = () => {
           </div>
         )}
 
-        {writeError && (
-          <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/50 rounded-xl p-4 backdrop-blur-sm">
-            <div className="flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <p className="text-red-600 text-sm font-medium">Error: {writeError.message}</p>
-            </div>
-          </div>
-        )}
+       {writeError && (
+  <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/50 rounded-xl p-4 backdrop-blur-sm">
+    <div className="flex items-start gap-3">
+      <svg
+        className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p className="text-red-600 text-sm font-medium">
+        Error: {typeof writeError === "object" && writeError !== null && "message" in writeError
+          ? (writeError as { message: string }).message
+          : String(writeError)}
+      </p>
+    </div>
+  </div>
+)}
 
         {hash && (
           <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200/50 rounded-xl p-4 backdrop-blur-sm">
