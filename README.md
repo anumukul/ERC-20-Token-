@@ -12,9 +12,9 @@ A complete, production-ready ERC-20 token implementation with a modern React fro
 ## 🌐 **Live Demo & Deployment**
 
 ### 🚀 **Frontend Application**
-- **Live DApp**: [Deploy your own](https://vercel.com/new/clone?repository-url=https://github.com/anumukul/ERC-20-Token-)
+- **Live DApp**: (https://erc-20-token-six.vercel.app/)
 - **Repository**: [GitHub Repository](https://github.com/anumukul/ERC-20-Token-)
-- **Build Status**: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/anumukul/ERC-20-Token-)
+
 
 ### 📋 **Contract Deployment**
 
