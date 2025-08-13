@@ -274,14 +274,14 @@ export const TransferFromForm = () => {
           >
             10 INR
           </button>
-          {allowanceData && (
-            <button
-              onClick={() => setAmount(formatUnits(allowanceData as bigint, 18))}
-              className="px-4 py-2 text-sm bg-gradient-to-r from-purple-100 to-indigo-100 hover:from-purple-200 hover:to-indigo-200 rounded-lg transition-all duration-200 font-medium text-purple-700 border border-purple-300/50"
-            >
-              Max Allowance
-            </button>
-          )}
+          {typeof allowanceData === "bigint" && (
+  <button
+    onClick={() => setAmount(formatUnits(allowanceData, 18))}
+    className="px-4 py-2 text-sm bg-gradient-to-r from-purple-100 to-indigo-100 hover:from-purple-200 hover:to-indigo-200 rounded-lg transition-all duration-200 font-medium text-purple-700 border border-purple-300/50"
+  >
+    Max Allowance
+  </button>
+)}
         </div>
 
         {hash && (
